@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Payroll Management System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<style>
+body{
+    background: url("https://images.unsplash.com/photo-1554224155-8d04cb21cd6c") no-repeat center center/cover;
+    height: 100vh;
+}
+.overlay{
+    background: rgba(0,0,0,0.5);
+    min-height: 100vh;
+    padding-top: 50px;
+}
+/* Make cards slightly transparent */
+.card{
+    background: rgba(255,255,255,0.9); /* semi-transparent */
+    backdrop-filter: blur(8px); /* blur background behind card */
+    border-radius: 15px;
+}
+/* Table styling */
+table th, table td{
+    vertical-align: middle;
+}
+/* Button hover effects */
+.btn-success:hover{
+    background-color: #28a745cc;
+    transform: scale(1.03);
+    transition: 0.2s;
+}
+.btn-danger:hover{
+    background-color: #dc3545cc;
+    transform: scale(1.03);
+    transition: 0.2s;
+}
+.btn-warning:hover{
+    background-color: #ffc107cc;
+    transform: scale(1.03);
+    transition: 0.2s;
+}
+.overlay{
+    background: rgba(0,0,0,0.4); /* dark overlay for contrast */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
+}
+.card-header{
+    border-radius: 15px 15px 0 0;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    font-size: 1.2rem;
+}
+table tbody tr:hover{
+    background-color: rgba(0,123,255,0.1);
+    transition: 0.2s;
+}
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;   /* important */
+  width: 100%;
+  height: 50px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="#">💼 Payroll System</a>
+    <div class="ms-auto text-white">
+      Welcome, Admin
+    </div>
+  </div>
+  <button class="btn btn-danger" onclick="logout()">Logout</button>
+</nav>
+
+<div class="container mt-5">
+    <div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card text-white bg-primary shadow">
+      <div class="card-body">
+        <h5>Total Employees</h5>
+        <h3 id="totalEmployees">0</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-white bg-success shadow">
+      <div class="card-body">
+        <h5>Total Salary</h5>
+        <h3 id="totalSalary">0</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-white bg-warning shadow">
+      <div class="card-body">
+        <h5>Departments</h5>
+        <h3 id="totalDept">0</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow">
+<div class="card-header bg-primary text-white">
+<h3 class="text-center">Payroll Management System</h3>
+</div>
+<div class="card-body">
+<h5 class="mb-3">Add Employee</h5>
+<div class="mb-3">
+<input type="hidden" id="employeeId">
+<input type="text" id="name" class="form-control" placeholder="Employee Name">
+</div>
+<div class="mb-3">
+<input type="email" id="email" class="form-control" placeholder="Email">
+</div>
+<div class="mb-3">
+<input type="text" id="department" class="form-control" placeholder="Department">
+</div>
+<div class="mb-3">
+<input type="number" id="salary" class="form-control" placeholder="Salary">
+</div>
+<button id="submitBtn" class="btn btn-success w-100" onclick="addEmployee()">Add Employee</button>
+<p class="mt-3 text-center text-success" id="message"></p>
+</div>
+</div>
+</div>
+
+<div class="container mt-5">
+<div class="card shadow">
+<div class="card-header bg-dark text-white">
+<h4>Employee List</h4>
+</div>
+<div class="card-body">
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Email</th>
+<th>Department</th>
+<th>Salary</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="employeeTable">
+</tbody>
+</table>
+<div class="card-body">
+<input 
+  type="text" 
+  id="search" 
+  class="form-control mb-3" 
+  placeholder="Search by name or department..."
+  onkeyup="searchEmployee()">
+<table class="table table-bordered table-striped">
+</div>
+</div>
+</div>
+
+<footer>
+  <small>Payroll Management System © 2026</small>
+</footer>
+
+<script>
+if(!localStorage.getItem("token")){
+  window.location.href = "login.html";
+}
+
+async function login(){
+let email = document.getElementById("email").value;
+let password = document.getElementById("password").value;
+let response = await fetch("http://localhost:3000/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify({email,password})
+});
+let data = await response.json();
+localStorage.setItem("token", data.token);
+}
+async function addEmployee(){
+let id = document.getElementById("employeeId").value
+let name = document.getElementById("name").value
+let email = document.getElementById("email").value
+let department = document.getElementById("department").value
+let salary = document.getElementById("salary").value
+let url = "http://localhost:3000/add-employee"
+if(id){
+url = `http://localhost:3000/update-employee/${id}`
+}
+let token = localStorage.getItem("token")
+let response = await fetch(url,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"authorization": token   // ✅ ADD HERE
+},
+body:JSON.stringify({name,email,department,salary})
+})
+let data = await response.json()
+document.getElementById("message").innerText = data.message
+loadEmployees()
+document.getElementById("submitBtn").innerText = "Add Employee";
+document.getElementById("employeeId").value = "";
+}
+
+async function loadEmployees(){
+let token = localStorage.getItem("token");
+let response = await fetch("http://localhost:3000/employees",{
+headers:{
+"authorization": token
+}
+});
+let employees = await response.json();
+let totalEmployees = employees.length;
+let totalSalary = 0;
+let departments = new Set();
+employees.forEach(emp => {
+  totalSalary += Number(emp.salary);
+  departments.add(emp.department);
+});
+
+document.getElementById("totalEmployees").innerText = totalEmployees;
+document.getElementById("totalSalary").innerText = totalSalary;
+document.getElementById("totalDept").innerText = departments.size;
+
+let table = document.getElementById("employeeTable");
+table.innerHTML = "";
+employees.forEach(emp => {
+table.innerHTML += `
+<tr>
+<td>${emp.id}</td>
+<td>${emp.name}</td>
+<td>${emp.email}</td>
+<td>${emp.department}</td>
+<td>${emp.salary}</td>
+<td>
+<button class="btn btn-warning btn-sm" onclick="editEmployee(${emp.id},'${emp.name}','${emp.email}','${emp.department}',${emp.salary})">Edit</button>
+<button class="btn btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">Delete</button>
+</td>
+</tr>
+`
+})
+}
+
+function editEmployee(id,name,email,department,salary){
+document.getElementById("name").value = name
+document.getElementById("email").value = email
+document.getElementById("department").value = department
+document.getElementById("salary").value = salary
+document.getElementById("employeeId").value = id
+document.getElementById("submitBtn").innerText = "Update Employee"
+}
+
+function searchEmployee(){
+let input = document.getElementById("search").value.toLowerCase()
+let rows = document.querySelectorAll("#employeeTable tr")
+rows.forEach(row => {
+let text = row.innerText.toLowerCase()
+if(text.includes(input)){
+row.style.display = ""
+}else{
+row.style.display = "none"
+}
+})
+}
+async function deleteEmployee(id){
+    await fetch(`http://localhost:3000/delete-employee/${id}`,{
+    method:"DELETE"
+    })
+    loadEmployees()
+}
+
+window.onload = loadEmployees;
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+}
+
+</script>
+</body>
+</html>

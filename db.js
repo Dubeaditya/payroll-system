@@ -1,10 +1,10 @@
-const mysql = require("mysql2");
+const mysql = require('mysql');
 
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root123",
-    database: "payroll_db"
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 db.connect((err) => {
@@ -16,3 +16,4 @@ db.connect((err) => {
 });
 
 module.exports = db;
+module.exports = connection;

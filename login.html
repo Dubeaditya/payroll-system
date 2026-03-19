@@ -48,12 +48,12 @@ async function login(){
 let email = document.getElementById("email").value;
 let password = document.getElementById("password").value;
 
-let response = await fetch("http://localhost:3000/login",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body: JSON.stringify({email,password})
+let response = await fetch("https://payroll-app.onrender.com/login", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ email, password })
 });
 let data = await response.json();
 if(data.token){

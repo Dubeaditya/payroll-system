@@ -20,30 +20,43 @@
   </div>
 </div>
 <script>
-async function register(){
+async function register() {
 
-let name = document.getElementById("name").value.trim();
-let email = document.getElementById("email").value.trim();
-let password = document.getElementById("password").value.trim();
+  let name = document.getElementById("name").value.trim();
+  let email = document.getElementById("email").value.trim();
+  let password = document.getElementById("password").value.trim();
 
-if(!name || !email || !password){
-  alert("All fields are required");
-  return;
-}
-if(password.length < 8){
-  alert("Password must be at least 8 characters");
-  return;
-}
-let response = await fetch("http://localhost:3000/register",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body: JSON.stringify({name,email,password})
-});
-let data = await response.json();
-alert(data.message);
-window.location.href = "login.html";
+  if (!name || !email || !password) {
+    alert("All fields are required");
+    return;
+  }
+
+  if (password.length < 8) {
+    alert("Password must be at least 8 characters");
+    return;
+  }
+
+  try {
+    let response = await fetch("https://payroll-system-wpma.onrender.com/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    let data = await response.json();
+
+    alert(data.message);
+
+    if (data.message === "User registered successfully") {
+      window.location.href = "login.html";
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("Server not responding");
+  }
 }
 </script>
 </body>

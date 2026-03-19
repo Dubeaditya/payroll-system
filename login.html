@@ -43,25 +43,33 @@ button:hover {
 </div>
 
 <script>
-async function login(){
+async function login() {
 
-let email = document.getElementById("email").value;
-let password = document.getElementById("password").value;
+  let email = document.getElementById("email").value;
+  let password = document.getElementById("password").value;
 
-let response = await fetch("https://payroll-app.onrender.com/login", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({ email, password })
-});
-let data = await response.json();
-if(data.token){
-  localStorage.setItem("token", data.token);
-  window.location.href = "index.html"; // go to dashboard
-}else{
-  alert(data.message);
-}
+  try {
+    let response = await fetch("https://payroll-system-wpma.onrender.com/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    let data = await response.json();
+
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      window.location.href = "index.html";
+    } else {
+      alert(data.message);
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("Server not responding");
+  }
 }
 </script>
 </body>

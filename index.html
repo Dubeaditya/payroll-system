@@ -183,7 +183,7 @@ if(!localStorage.getItem("token")){
 async function login(){
 let email = document.getElementById("email").value;
 let password = document.getElementById("password").value;
-let response = await fetch("http://localhost:3000/login",{
+let response = await fetch("https://payroll-system-wpma.onrender.com//login",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -199,9 +199,9 @@ let name = document.getElementById("name").value
 let email = document.getElementById("email").value
 let department = document.getElementById("department").value
 let salary = document.getElementById("salary").value
-let url = "http://localhost:3000/add-employee"
+let url = "https://payroll-system-wpma.onrender.com//add-employee"
 if(id){
-url = `http://localhost:3000/update-employee/${id}`
+url = `https://payroll-system-wpma.onrender.com//update-employee/${id}`
 }
 let token = localStorage.getItem("token")
 let response = await fetch(url,{
@@ -221,7 +221,7 @@ document.getElementById("employeeId").value = "";
 
 async function loadEmployees(){
 let token = localStorage.getItem("token");
-let response = await fetch("http://localhost:3000/employees",{
+let response = await fetch("https://payroll-system-wpma.onrender.com//employees",{
 headers:{
 "authorization": token
 }
@@ -280,7 +280,7 @@ row.style.display = "none"
 })
 }
 async function deleteEmployee(id){
-    await fetch(`http://localhost:3000/delete-employee/${id}`,{
+    await fetch(`https://payroll-system-wpma.onrender.com//delete-employee/${id}`,{
     method:"DELETE"
     })
     loadEmployees()
